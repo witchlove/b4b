@@ -5,7 +5,7 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-case class Order(id : Long, orderDesc : String) {
+case class Order(id : Long, orderDesc : String, salesperson : SalesPerson , items : List[OrderItem]) {
 }
  
 
@@ -13,8 +13,10 @@ object Order {
   
   val order = {
 		  get[Long]("id") ~ 
-		  get[String]("description") map {
-		  case id~description => Order(id,description)
+		  get[String]("description") ~
+		  get[String]("name")~
+		  get[String]("firstname") map {
+		  case id~description~name~firstname => Order(id,description, SalesPerson(name,firstname),Nil)
 		  }
   }
 
