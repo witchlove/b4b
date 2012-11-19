@@ -28,4 +28,6 @@ object SalesPerson {
     					.executeUpdate
   }
   
+  def justForGit = Nil
+  
 }
