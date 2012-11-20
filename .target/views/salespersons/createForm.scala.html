@@ -1,0 +1,27 @@
+@(salespersonForm: Form[SalesPerson])
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) } 
+
+@main {
+    
+    <h1>Create or Edit SalesPerson</h1>
+    
+    @form(routes.Application.save()) {
+        
+        <fieldset>
+        
+            @inputText(salespersonForm("name"), '_label -> "Name")
+            @inputText(salespersonForm("firstName"), '_label -> "FirstName")
+            @inputText(salespersonForm("mobile"), '_label -> "Mobile")
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Save Person" class="btn primary"> or 
+            <a href="@routes.SalesPersonController.list()" class="btn">Cancel</a> 
+        </div>
+        
+    }
+    
+}

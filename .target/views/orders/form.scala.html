@@ -1,0 +1,45 @@
+@(orderForm: Form[Order])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@title = {
+    Create or edit an Order
+}
+
+@main{
+	
+	 @helper.form(action = routes.OrderController.submit) {
+		@if(orderForm.hasErrors) {
+        <div class="alert-message error">
+            <p><strong>Oops</strong>orderForm.globalError</p>
+        </div>
+	   }
+	   
+	   
+        <fieldset>
+            <legend>Order Info</legend>
+            
+            @inputText(
+                orderForm("orderDesc"), 
+                '_label -> "Order description", 
+                '_help -> "Please decribe this order",
+                '_error -> orderForm.globalError
+            )
+
+		 	@inputText(
+                orderForm("salespersonId"), 
+                '_label -> "ID", 
+                '_help -> "ID",
+                '_error -> orderForm.globalError
+            )
+                        
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" class="btn primary" value="Submit Order">
+            <a href="@routes.Application.index" class="btn">Cancel</a>
+        </div>
+        
+    }
+}

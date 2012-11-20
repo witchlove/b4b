@@ -5,29 +5,33 @@ import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
 
-case class SalesPerson(name :String , firstName : String)
-
+case class SalesPerson(
+    id: Pk[Long],
+    name :String,
+    firstName : String,
+    mobile : Option[String])
 
 object SalesPerson {
   
   val salesPersonParser = {
-     get[String]("name")~
-     get[String]("firstname") map {
-       case name~firstname => SalesPerson(name,firstname)
-     }
+    get[Pk[Long]]("SalesPerson.id") ~
+    get[String]("SalesPerson.name") ~
+    get[String]("SalesPerson.firstName") ~
+    get[Option[String]]("SalesPerson.mobile") map {
+      case id~name~firstName~mobile => SalesPerson(id, name, firstName, mobile)
+    }
   }
-  
+
   def all(): List[SalesPerson] = DB.withConnection {
     implicit c => SQL("select * from salespersons").as(salesPersonParser *)
   }
   
-  def create(name : String, firstname : String) = DB.withConnection {
-    implicit con => SQL("insert into salespersons(name,firstname) values ({name,firstname})")
-    					.on('name -> name ,
-    					    'firstname -> firstname)
+  def insert(salesPerson : SalesPerson) = DB.withConnection {
+    implicit con => SQL("insert into salespersonsvalues(name,firstName,mobile values({name},{firstname},{mobile})")
+    					.on('name -> salesPerson.name ,
+    					    'firstname -> salesPerson,
+    					    'mobile -> salesPerson.mobile)
     					.executeUpdate
   }
-  
-  def justForGit = Nil
-  
+   
 }

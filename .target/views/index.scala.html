@@ -1,51 +1,5 @@
-@(orders: List[Order], orderForm: Form[Order])
-
 @import helper._
 
-@header(orderBy: Int, title: String) = {
-    <th class="col@orderBy">
-        <a href="">@title</a>
-    </th>
-}
-
 @main{
-    <table class="computers zebra-striped">
-            <thead>
-                <tr>
-                    @header(2, "Computer name")
-                    @header(3, "Introduced")
-                    @header(4, "Discontinued")
-                    @header(5, "Company")
-                </tr>
-            </thead>
-            <tbody>
-
-                
-
-            </tbody>
-        </table>
-
-    <h1>@orders.size order(s)</h1>
-    <ul>
-        @orders.map { order =>
-            <li>
-                @order.orderDesc
-                
-                @form(routes.Application.deleteOrder(order.id)) {
-                    <input type="submit" value="Delete">
-                }
-            </li>
-        }
-    </ul> 
-                
-                
-    <h2>Add a new order</h2>
-    
-    @form(routes.Application.newOrder) {
-        @inputText(orderForm("orderDesc"))
-         @inputText(orderForm("id")) 
-        <input type="submit" value="Create">
-        
-    }
-    
+    Hello world should appear after submit :)    
 }

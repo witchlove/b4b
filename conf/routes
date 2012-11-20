@@ -5,10 +5,14 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET		/orders						controllers.Application.orders
-POST	/orders						controllers.Application.newOrder
-POST    /orders/:id/delete       	controllers.Application.deleteOrder(id: Long)
+# Order
+GET     /orders                   	controllers.OrderController.form
+GET     /orders/:orderId		    controllers.OrderController.editForm(orderId : Long)
+POST    /orders                   	controllers.OrderController.submit
 
+#SalesPerson
+GET		/salespersons				controllers.SalesPersonController.create
+POST	/salespersons				controllers.SalesPersonController.save
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
