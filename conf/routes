@@ -11,7 +11,8 @@ GET     /orders/:orderId		    controllers.OrderController.editForm(orderId : Lon
 POST    /orders                   	controllers.OrderController.submit
 
 #SalesPerson
-GET		/salespersons				controllers.SalesPersonController.create
+GET		/salespersons				controllers.SalesPersonController.list
+GET		/salespersons/new			controllers.SalesPersonController.create
 POST	/salespersons				controllers.SalesPersonController.save
 
 # Map static resources from the /public folder to the /assets URL path

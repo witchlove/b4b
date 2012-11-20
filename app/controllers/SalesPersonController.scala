@@ -30,7 +30,7 @@ object SalesPersonController extends Controller {
   }
   
   def list = Action {
-   Ok(html.index());
+   Ok(html.salespersons.salespersonsOverview(SalesPerson.all));
   }
   
   def save = Action { implicit request =>
@@ -38,7 +38,7 @@ object SalesPersonController extends Controller {
       formWithErrors => BadRequest(html.salespersons.createForm(formWithErrors)),
       salesPerson => {
         SalesPerson.insert(salesPerson)
-        Redirect(routes.Application.index)
+        Redirect(routes.SalesPersonController.list)
       }
     )
     

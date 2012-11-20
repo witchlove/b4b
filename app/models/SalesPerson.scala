@@ -14,10 +14,10 @@ case class SalesPerson(
 object SalesPerson {
   
   val salesPersonParser = {
-    get[Pk[Long]]("SalesPerson.id") ~
-    get[String]("SalesPerson.name") ~
-    get[String]("SalesPerson.firstName") ~
-    get[Option[String]]("SalesPerson.mobile") map {
+    get[Pk[Long]]("SalesPersons.id") ~
+    get[String]("SalesPersons.name") ~
+    get[String]("SalesPersons.firstName") ~
+    get[Option[String]]("SalesPersons.mobile") map {
       case id~name~firstName~mobile => SalesPerson(id, name, firstName, mobile)
     }
   }
@@ -27,9 +27,9 @@ object SalesPerson {
   }
   
   def insert(salesPerson : SalesPerson) = DB.withConnection {
-    implicit con => SQL("insert into salespersonsvalues(name,firstName,mobile values({name},{firstname},{mobile})")
+    implicit con => SQL("insert into salespersons (name,firstName,mobile) values({name},{firstname},{mobile})")
     					.on('name -> salesPerson.name ,
-    					    'firstname -> salesPerson,
+    					    'firstname -> salesPerson.firstName,
     					    'mobile -> salesPerson.mobile)
     					.executeUpdate
   }

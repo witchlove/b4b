@@ -1,0 +1,38 @@
+@(salesPersons : List[SalesPerson])
+
+@import helper._
+
+@main {
+    <h1>overview</h1>
+	
+	<table class="computers zebra-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+					<th>FirstName</th>
+					<th>Mobile</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @salesPersons.map { 
+                 		case (salesperson) => {
+                        <tr>
+                            <td>
+                 				@salesperson.name
+                 			</td>
+                            <td>
+                                @salesperson.firstName
+                            </td>
+                            <td>
+                                @salesperson.mobile
+                            </td>
+                            
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+  
+}

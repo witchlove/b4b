@@ -2,13 +2,11 @@
 
 @import helper._
 
-@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) } 
-
 @main {
     
     <h1>Create or Edit SalesPerson</h1>
     
-    @form(routes.Application.save()) {
+    @form(routes.SalesPersonController.save()) {
         
         <fieldset>
         
@@ -19,7 +17,7 @@
         
         <div class="actions">
             <input type="submit" value="Save Person" class="btn primary"> or 
-            <a href="@routes.SalesPersonController.list()" class="btn">Cancel</a> 
+            <a href="@routes.SalesPersonController.list" class="btn">Cancel</a>
         </div>
         
     }
