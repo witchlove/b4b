@@ -78,8 +78,8 @@ object SalesPerson {
       ).on(
         'id -> id,
         'name -> salesPeron.name,
-        'introduced -> salesPeron.firstName,
-        'discontinued -> salesPeron.mobile
+        'firstName -> salesPeron.firstName,
+        'mobile -> salesPeron.mobile
       ).executeUpdate()
     }
   }
