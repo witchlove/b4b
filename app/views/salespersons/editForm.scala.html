@@ -1,0 +1,29 @@
+@(id : Long ,salespersonForm: Form[SalesPerson])
+
+@import helper._
+
+@main {
+    
+    <h1>Create or Edit SalesPerson</h1>
+    
+    @form(routes.SalesPersonController.update(id)) {
+        
+        <fieldset>
+        
+            @inputText(salespersonForm("name"), '_label -> "Name")
+            @inputText(salespersonForm("firstName"), '_label -> "FirstName")
+            @inputText(salespersonForm("mobile"), '_label -> "Mobile")
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Save Person" class="btn primary"> or 
+            <a href="" class="btn">Cancel</a>
+        </div>
+        
+    }
+
+    @form(routes.SalesPersonController.delete(id), 'class -> "topRight") {
+        <input type="submit" value="Delete this Sales person" class="btn danger">
+    }
+    
+}

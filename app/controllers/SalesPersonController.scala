@@ -9,8 +9,12 @@ import play.api.data.format.Formats.longFormat
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
-
+import models._
 import anorm._
+import anorm.SqlParser._
+import play.api.Play.current
+import play.api.db.DB
+import models.SalesPerson
 
 object SalesPersonController extends Controller {
   
@@ -25,12 +29,38 @@ object SalesPersonController extends Controller {
   (SalesPerson.unapply)
   )
   
+  val Home = Redirect(routes.SalesPersonController.list(0, 2, ""))
+  
   def create = Action {
     Ok(html.salespersons.createForm(salespersonForm))
   }
   
-  def list = Action {
-   Ok(html.salespersons.salespersonsOverview(SalesPerson.all));
+  def edit(id: Long) = Action {
+    SalesPerson.findById(id).map { salesperson =>
+      Ok(html.salespersons.editForm(id, salespersonForm.fill(salesperson)))
+    }.getOrElse(NotFound)
+  }
+  
+  def update(id: Long) = Action { implicit request =>
+    salespersonForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.salespersons.editForm(id, formWithErrors)),
+      salesperson => {
+        SalesPerson.update(id, salesperson)
+        Home.flashing("success" -> "Person %s has been updated".format(salesperson.name))
+      }
+    )
+  }
+  
+  def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+    Ok(html.salespersons.salespersonsOverview(
+      SalesPerson.list(page = page, orderBy = orderBy, filter = ("%"+filter+"%")),
+      orderBy, filter
+    ))
+  }
+  
+  def delete(id: Long) = Action {
+    SalesPerson.delete(id)
+    Home
   }
   
   def save = Action { implicit request =>
@@ -38,7 +68,7 @@ object SalesPersonController extends Controller {
       formWithErrors => BadRequest(html.salespersons.createForm(formWithErrors)),
       salesPerson => {
         SalesPerson.insert(salesPerson)
-        Redirect(routes.SalesPersonController.list)
+        Home
       }
     )
     
