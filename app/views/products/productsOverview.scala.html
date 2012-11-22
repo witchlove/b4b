@@ -1,0 +1,105 @@
+@(currentPage: Page[Product], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.ProductController.list(newPage, newOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
+    }.getOrElse(currentOrderBy), currentFilter)
+    
+}
+
+@**********************************
+* Helper generating table headers *
+***********************************@
+@header(orderBy: Int, title: String) = {
+    <th class="col@orderBy header @if(scala.math.abs(currentOrderBy) == orderBy) @{if(currentOrderBy < 0) "headerSortDown" else "headerSortUp"}">
+        <a href="@link(0, Some(orderBy))">@title</a>
+    </th>
+}
+
+@main {
+   <h1>@Messages("products.list.title")</h1>
+  
+  <div id="actions">
+        
+        @helper.form(action=routes.ProductController.list()) {
+            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by product name...">
+            <input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
+        }
+        
+        <a class="btn success" id="add" href="@routes.ProductController.create()">Add a new Product</a>
+        
+    </div>
+    
+    @Option(currentPage.items).filterNot(_.isEmpty).map { products =>
+        
+        <table class="computers zebra-striped">
+            <thead>
+                <tr>
+                    @header(2, "Product Code")
+                    @header(3, "Product Name")
+                    @header(4, "Product Price")
+    				@header(5, "Description")
+                </tr>
+            </thead>
+            <tbody>
+
+                @products.map { 
+                    case (product) => {
+                        <tr>
+                    		<td>
+                    			<a href="@routes.ProductController.edit(product.id.get)">@product.productCode</a>
+                    		</td>
+                            <td>
+                    			<a href="@routes.ProductController.edit(product.id.get)">@product.productName</a></td>
+                            <td>
+                                @product.productPrice
+                            </td>
+                            <td>
+                                @product.productDescription
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <div id="pagination" class="pagination">
+            <ul>
+                @currentPage.prev.map { page =>
+                    <li class="prev">
+                        <a href="@link(page)">&larr; Previous</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="prev disabled">
+                        <a>&larr; Previous</a>
+                    </li>
+                }
+                <li class="current">
+                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + products.size) of @currentPage.total</a>
+                </li>
+                @currentPage.next.map { page =>
+                    <li class="next">
+                        <a href="@link(page)">Next &rarr;</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="next disabled">
+                        <a>Next &rarr;</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    }.getOrElse {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }
+
+  
+}

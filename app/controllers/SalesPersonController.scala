@@ -1,20 +1,17 @@
 package controllers
 
-import models._
+import anorm.NotAssigned
+import anorm.Pk
+import models.SalesPerson
 import play.api.data.Form
+import play.api.data.Forms.ignored
 import play.api.data.Forms.mapping
-import play.api.data.Forms._
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.optional
 import play.api.data.Forms.text
-import play.api.data.format.Formats.longFormat
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
-import models._
-import anorm._
-import anorm.SqlParser._
-import play.api.Play.current
-import play.api.db.DB
-import models.SalesPerson
 
 object SalesPersonController extends Controller {
   

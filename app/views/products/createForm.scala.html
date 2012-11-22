@@ -1,0 +1,27 @@
+@(productForm: Form[Product])
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@import helper._
+
+@main {
+    
+    <h1>Create or Edit Product</h1>
+    
+    @form(routes.ProductController.save()) {
+        
+        <fieldset>
+        	@inputText(productForm("productCode"), '_label -> "Product Code")
+            @inputText(productForm("productName"), '_label -> "Name")
+            @inputText(productForm("productDescription"), '_label -> "ProductDescription")
+            @inputText(productForm("productPrice"), '_label -> "Price")
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Save Product" class="btn primary"> or 
+            <a href="@routes.ProductController.list()" class="btn">Cancel</a>
+        </div>
+        
+    }
+    
+}

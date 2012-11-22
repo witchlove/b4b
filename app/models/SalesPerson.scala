@@ -22,7 +22,7 @@ object SalesPerson {
     }
   }
   
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[SalesPerson] = {
+  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = ""): Page[SalesPerson] = {
     
     val offest = pageSize * page
     

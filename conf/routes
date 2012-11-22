@@ -18,5 +18,13 @@ POST    /salespersons/:id           controllers.SalesPersonController.update(id:
 POST    /salespersons/:id/delete    controllers.SalesPersonController.delete(id:Long)
 POST	/salespersons				controllers.SalesPersonController.save
 
+#SalesPerson
+GET		/products				controllers.ProductController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+GET		/products/new			controllers.ProductController.create
+GET     /products/:id           controllers.ProductController.edit(id:Long)
+POST    /products/:id           controllers.ProductController.update(id:Long)
+POST    /products/:id/delete    controllers.ProductController.delete(id:Long)
+POST	/products				controllers.ProductController.save
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
