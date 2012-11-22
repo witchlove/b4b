@@ -1,4 +1,4 @@
-@(salespersonForm: Form[SalesPerson])
+@(productForm: Form[Product])
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
@@ -6,20 +6,20 @@
 
 @main {
     
-    <h1>Create or Edit SalesPerson</h1>
+    <h1>Create or Edit Product</h1>
     
-    @form(routes.SalesPersonController.save()) {
+    @form(routes.ProductController.save()) {
         
         <fieldset>
-        
-            @inputText(salespersonForm("name"), '_label -> "Name")
-            @inputText(salespersonForm("firstName"), '_label -> "FirstName")
-            @inputText(salespersonForm("mobile"), '_label -> "Mobile")
+        	@inputText(productForm("productCode"), '_label -> "Product Code")
+            @inputText(productForm("productName"), '_label -> "Name")
+            @textarea(productForm("productDescription"), args = 'rows -> 3, 'cols -> 50,'_label -> "ProductDescription")
+            @inputText(productForm("productPrice"), '_label -> "Price")
         </fieldset>
         
         <div class="actions">
-            <input type="submit" value="Save Person" class="btn primary"> or 
-            <a href="@routes.SalesPersonController.list()" class="btn">Cancel</a>
+            <input type="submit" value="Save Product" class="btn primary"> or 
+            <a href="@routes.ProductController.list()" class="btn">Cancel</a>
         </div>
         
     }

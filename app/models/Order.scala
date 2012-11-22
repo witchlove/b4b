@@ -5,10 +5,7 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-case class Order( orderDesc : String, salespersonId : Long ) {
-   val id : Long = 0
-   val itemList : List[OrderItem] = List[OrderItem]()
-}
+case class Order( orderDesc : String, salespersonId : Long )
 
 object Order {
   

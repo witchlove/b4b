@@ -65,6 +65,16 @@ object Product {
     }
   }
   
+  def findByProductCode(code : String) : Option[Product] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from products where productCode = {code}").on('code -> code).as(productParser.singleOpt)
+    }
+  }
+  
+  def verifyProductCode(productCode : String) : Boolean = {
+	findByProductCode(productCode).isDefined
+  }
+  
   def update(id: Long, product : Product) = {
 	  DB.withConnection { implicit connection =>
       SQL(

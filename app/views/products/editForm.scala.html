@@ -13,7 +13,7 @@
         <fieldset>
             @inputText(productForm("productCode"), '_label -> "Product Code")
             @inputText(productForm("productName"), '_label -> "Name")
-            @inputText(productForm("productDescription"), '_label -> "ProductDescription")
+    		@textarea(productForm("productDescription"), args = 'rows -> 3, 'cols -> 50,'_label -> "ProductDescription")
             @inputText(productForm("productPrice"), '_label -> "Price")
         </fieldset>
         
