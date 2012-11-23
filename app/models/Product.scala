@@ -102,6 +102,15 @@ object Product {
     }
   }
   
+  def all(): List[Product] = DB.withConnection {
+    implicit c => SQL("select * from products").as(productParser *)
+  }
+  
+  def allForSelect : Seq[(String,String)] = {
+    val products = all
+    products map (input => (input.id.get.toString,input.productCode + "-" +  input.productName)) toSeq
+  }
+  
   def insert(product : Product) = {
     DB.withConnection { implicit con => 
      SQL(

@@ -3,13 +3,16 @@
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
 @import helper._
+@import helper.twitterBootstrap._
 
 @informationGroup(field: Field, className: String = "profile") = {
     <div class="twipsies well @className">
-        @inputText(
-            field("productId"), 
-            '_label -> "productId"
-        )
+        @select(
+                field("productId"), 
+                options = Product.allForSelect,
+                '_default -> "--- Choose a Product ---",
+                '_label -> "Products"
+            )
 
         @inputText(
             field("quantity"), 
@@ -27,14 +30,20 @@
         
     	@if(orderForm.hasGlobalErrors) { 
             <div class="alert alert-error">
-                @orderForm.globalError
+                @orderForm.errorsAsJson
             </div>
         }
-      
+    	
+    	@if(orderForm.hasErrors) { 
+            <div class="alert alert-error">
+                @orderForm.errorsAsJson
+            </div>
+        }
+    	
         <fieldset>
         	@inputText(orderForm("orderCode"), '_label -> "Order Code")
             @select(
-                orderForm("salespersonId"), 
+                orderForm("salesPersonId"), 
                 options = SalesPerson.allForSelect,
                 '_default -> "--- Choose a SalesPerson ---",
                 '_label -> "Sales Persons",
@@ -47,15 +56,21 @@
             
             <div id="orderitems">
             
-                @repeat(orderForm("orderitems")) { orderitem =>
+                @repeat(orderForm("orderitems"), min = 2) { orderitem =>
                 
                    @informationGroup(orderitem)
                 
                 }
                 
-                
-            
-            </div>
+                @informationGroup(
+                    orderForm("informations[x]"),
+                    className = "profile_template"
+                )   
+
+                <div class="manage">
+                    <a class="addProfile btn success">Add Order Item</a>
+                </div>
+          </div>
             
         </fieldset>
     	
@@ -65,5 +80,13 @@
         </div>
         
     }
+
+      <script type="text/javascript" charset="utf-8">
+        $('.addProfile').live('click', function(e) {
+        	alert('does thtis click trigger')
+            var template = $('.profile_template')
+            template.before('<div class="twipsies well profile">' + template.html() + '</div>')
+        })
+    </script>
     
 }
