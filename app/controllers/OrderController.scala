@@ -1,54 +1,66 @@
 package controllers
 
+import anorm.NotAssigned
+import anorm.Pk
 import models.Order
 import play.api.data.Form
+import play.api.data.Forms.ignored
 import play.api.data.Forms.mapping
-import play.api.data.Forms._
-import play.api.data.Forms.text
-import play.api.data.format.Formats._
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.of
+import play.api.data.format.Formats.longFormat
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
+import play.api.data._
+import play.api._
+import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.validation.Constraints._
+import models.OrderItem
+import org.omg.CosNaming.NamingContextPackage.NotFound
 
 object OrderController extends Controller {
+
+  val Home = Redirect(routes.OrderController.list(0, 2, ""))
   
-  val orderForm : Form[Order] = Form (
-    mapping("orderDesc" ->text,
-        "salespersonId" ->of[Long]
-    )
-    (Order.apply)
-    (Order.unapply)
-  )
-  
-  /**
-   * Display an empty form.
-   */
-  def form = Action {
-    Ok(html.orders.form(orderForm));
+  val orderForm: Form[Order] = Form(
+    mapping(
+      "id" -> ignored(NotAssigned: Pk[Long]),
+      "orderCode" -> nonEmptyText,
+      "salesPersonId" -> of[Long],
+      "orderItems" -> optional(seq(
+        mapping(
+          "id" -> ignored(NotAssigned: Pk[Long]),
+          "productId" -> of[Long],
+          "quantity" -> of[Long])(OrderItem.apply)(OrderItem.unapply))
+        ))(Order.apply)(Order.unapply))
+
+  def create = Action {
+    Ok(html.orders.createForm(orderForm))
   }
-  
-  /**
-   * Display a form pre-filled with an existing Contact.
-   */
-  def editForm(orderId : Long) = Action {
-    val existingOrder = Order("tuinkabouter",orderId)
-    Ok(html.orders.form(orderForm.fill(existingOrder)))
+
+  def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+    Ok(html.orders.ordersOverview(
+      Order.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
+      orderBy, filter))
   }
-  
-  /**
-   * Handle form submission.
-   */
-  def submit = Action { implicit request =>
+
+  def edit(id: Long) = Action {
+	  NotFound
+  }
+
+  def save = Action { implicit request =>
     orderForm.bindFromRequest.fold(
-      errors => {
-    	  println( errors.globalErrors)
-    	  println(errors.errors mkString "\n")
-    	  BadRequest(html.orders.form(errors))
-      },
+      formWithErrors => BadRequest(html.orders.createForm(formWithErrors)),
       order => {
-    	  Order.create(order.orderDesc)
-    	  Redirect(routes.Application.index)
-      }
-    )
+        Order.insert(order)
+        Home
+      })
+
   }
+
+  def update = TODO
+
 }

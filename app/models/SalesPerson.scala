@@ -61,6 +61,11 @@ object SalesPerson {
     implicit c => SQL("select * from salespersons").as(salesPersonParser *)
   }
   
+  def allForSelect : Seq[(String,String)] = {
+    val salesPersons = all
+    salesPersons map (input => (input.id.get.toString,input.name + "-" +  input.firstName)) toSeq
+  }
+  
   def findById(id : Long) : Option[SalesPerson] = {
     DB.withConnection { implicit connection =>
       SQL("select * from salespersons where id = {id}").on('id -> id).as(salesPersonParser.singleOpt)

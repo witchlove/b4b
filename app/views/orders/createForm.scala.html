@@ -1,0 +1,69 @@
+@(orderForm: Form[Order])
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@import helper._
+
+@informationGroup(field: Field, className: String = "profile") = {
+    <div class="twipsies well @className">
+        @inputText(
+            field("productId"), 
+            '_label -> "productId"
+        )
+
+        @inputText(
+            field("quantity"), 
+            '_label -> "quantity"
+        )
+    </div>
+}
+
+
+@main {
+    
+    <h1>Create or Edit Product</h1>
+    
+    @form(routes.OrderController.save()) {
+        
+    	@if(orderForm.hasGlobalErrors) { 
+            <div class="alert alert-error">
+                @orderForm.globalError
+            </div>
+        }
+      
+        <fieldset>
+        	@inputText(orderForm("orderCode"), '_label -> "Order Code")
+            @select(
+                orderForm("salespersonId"), 
+                options = SalesPerson.allForSelect,
+                '_default -> "--- Choose a SalesPerson ---",
+                '_label -> "Sales Persons",
+                '_error -> orderForm("salespersonId").error.map(_.withMessage("Please select a person"))
+            )
+        </fieldset>
+        
+    	<fieldset>
+            <legend>OrderItems</legend>
+            
+            <div id="orderitems">
+            
+                @repeat(orderForm("orderitems")) { orderitem =>
+                
+                   @informationGroup(orderitem)
+                
+                }
+                
+                
+            
+            </div>
+            
+        </fieldset>
+    	
+        <div class="actions">
+            <input type="submit" value="Save Order" class="btn primary"> or 
+            <a href="@routes.OrderController.list()" class="btn">Cancel</a>
+        </div>
+        
+    }
+    
+}

@@ -1,0 +1,94 @@
+@(currentPage: Page[Order], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.OrderController.list(newPage, newOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
+    }.getOrElse(currentOrderBy), currentFilter)
+    
+}
+
+@**********************************
+* Helper generating table headers *
+***********************************@
+@header(orderBy: Int, title: String) = {
+    <th class="col@orderBy header @if(scala.math.abs(currentOrderBy) == orderBy) @{if(currentOrderBy < 0) "headerSortDown" else "headerSortUp"}">
+        <a href="@link(0, Some(orderBy))">@title</a>
+    </th>
+}
+
+@main {
+   <h1>@Messages("orders.list.title")</h1>
+  
+  <div id="actions">
+        
+        @helper.form(action=routes.OrderController.list()) {
+            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by orderCode name...">
+            <input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
+        }
+        
+        <a class="btn success" id="add" href="@routes.OrderController.create()">Add a new Order</a>
+        
+    </div>
+    
+    @Option(currentPage.items).filterNot(_.isEmpty).map { orders =>
+        
+        <table class="computers zebra-striped">
+            <thead>
+                <tr>
+                    @header(2, "Order Code")
+                </tr>
+            </thead>
+            <tbody>
+
+                @orders.map { 
+                    case (order) => {
+                        <tr>
+                    		<td>
+                    			<a href="@routes.OrderController.edit(order.id.get)">@order.orderCode</a>
+                    		</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <div id="pagination" class="pagination">
+            <ul>
+                @currentPage.prev.map { page =>
+                    <li class="prev">
+                        <a href="@link(page)">&larr; Previous</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="prev disabled">
+                        <a>&larr; Previous</a>
+                    </li>
+                }
+                <li class="current">
+                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + orders.size) of @currentPage.total</a>
+                </li>
+                @currentPage.next.map { page =>
+                    <li class="next">
+                        <a href="@link(page)">Next &rarr;</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="next disabled">
+                        <a>Next &rarr;</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    }.getOrElse {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }
+
+  
+}
