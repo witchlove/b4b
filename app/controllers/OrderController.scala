@@ -30,7 +30,7 @@ object OrderController extends Controller {
       "id" -> ignored(NotAssigned: Pk[Long]),
       "orderCode" -> nonEmptyText,
       "salesPersonId" -> of[Long],
-      "orderItems" -> optional(seq(
+      "orderitems" -> optional(seq(
         mapping(
           "id" -> ignored(NotAssigned: Pk[Long]),
           "productId" -> of[Long],
@@ -47,14 +47,13 @@ object OrderController extends Controller {
       orderBy, filter))
   }
 
-  def edit(id: Long) = Action {
-	  NotFound
-  }
+  def edit(id: Long) = TODO
 
   def save = Action { implicit request =>
     orderForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.orders.createForm(formWithErrors)),
       order => {
+        Logger.debug(order.orderItems mkString " + ")
         Order.insert(order)
         Home
       })
