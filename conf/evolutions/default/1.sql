@@ -32,7 +32,7 @@ CREATE TABLE orderItems (
 	id integer NOT NULL DEFAULT nextval('orderItem_id_seq'),
 	orderId integer NOT NULL ,
 	productId integer NOT NULL,
-	quantity number
+	quantity bigint(20)
 );
  
 # --- !Downs

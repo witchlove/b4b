@@ -9,7 +9,7 @@ GET     /                           controllers.Application.index
 GET		/orders					controllers.OrderController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 GET		/orders/new				controllers.OrderController.create
 GET     /orders/:id          	controllers.OrderController.edit(id:Long)
-#POST    /orders/:id           	controllers.OrderController.update(id:Long)
+POST    /orders/:id           	controllers.OrderController.update(id:Long)
 #POST    /orders/:id/delete    	controllers.OrderController.delete(id:Long)
 POST	/orders					controllers.OrderController.save
 

@@ -33,8 +33,8 @@ object OrderController extends Controller {
       "orderitems" -> optional(seq(
         mapping(
           "id" -> ignored(NotAssigned: Pk[Long]),
-          "productId" -> of[Long],
-          "quantity" -> of[Long])(OrderItem.apply)(OrderItem.unapply))
+          "productId" -> optional(of[Long]),
+          "quantity" -> optional(of[Long]))(OrderItem.apply)(OrderItem.unapply))
         ))(Order.apply)(Order.unapply))
 
   def create = Action {
@@ -47,7 +47,9 @@ object OrderController extends Controller {
       orderBy, filter))
   }
 
-  def edit(id: Long) = TODO
+  def edit(id: Long) = Action {
+      Ok(html.orders.editForm(id,orderForm.fill(Order.findById(id))))
+  }
 
   def save = Action { implicit request =>
     orderForm.bindFromRequest.fold(
@@ -60,6 +62,11 @@ object OrderController extends Controller {
 
   }
 
-  def update = TODO
-
+  def update(id : Long) = Action { implicit request => orderForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.orders.editForm(id,formWithErrors)),
+      order => {
+        Order.update(id, order)
+        Home.flashing("success" -> "Person %s has been updated".format(order.orderCode))
+      })
+  }
 }

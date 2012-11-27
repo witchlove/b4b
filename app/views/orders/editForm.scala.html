@@ -5,28 +5,34 @@
 @import helper._
 @import helper.twitterBootstrap._
 
-@informationGroup(field: Field, className: String = "profile") = {
-    <div class="twipsies well @className">
-        @select(
+@informationGroup(field: Field, className: String = "orderItem") = {
+   
+		<tr>
+			<td>
+        	@select(
                 field("productId"), 
                 options = Product.allForSelect,
                 '_default -> "--- Choose a Product ---",
                 '_label -> "Products"
-            )
-
-        @inputText(
-            field("quantity"), 
-            '_label -> "quantity"
-        )
-    </div>
+            	)
+			</td>
+			<td>
+        		@inputText(
+            		field("quantity"), 
+            		'_label -> "quantity"
+        		)
+			</td>
+			<td>
+				<a class="removeOrderItem btn danger pull-right">Clear</a>
+			</td>
+		</tr>
 }
-
 
 @main {
     
     <h1>Create or Edit Product</h1>
     
-    @form(routes.OrderController.save()) {
+    @form(routes.OrderController.update(id)) {
         
     	@if(orderForm.hasGlobalErrors) { 
             <div class="alert alert-error">
@@ -54,39 +60,22 @@
     	<fieldset>
             <legend>OrderItems</legend>
             
-            <div id="orderitems">
-            
-                @repeat(orderForm("orderitems"), min = 1) { orderitem =>
+            <div id="orderitems" class="span6">
+            	<table class="table table-condensed table-striped">
+                @repeat(orderForm("orderitems"), min = 15) { orderitem =>
                 
                    @informationGroup(orderitem)
                 
                 }
+                </table>
                 
-                @informationGroup(
-                    orderForm("informations[x]"),
-                    className = "profile_template"
-                )   
-
-                <div class="manage">
-                    <a class="addProfile btn success">Add Order Item</a>
-                </div>
-          </div>
+            </div>
             
         </fieldset>
     	
         <div class="actions">
             <input type="submit" value="Save Order" class="btn primary"> or 
             <a href="@routes.OrderController.list()" class="btn">Cancel</a>
-        </div>
-        
+        </div>  	
     }
-
-      <script type="text/javascript" charset="utf-8">
-        $('.addProfile').live('click', function(e) {
-        	alert('does thtis click trigger')
-            var template = $('.profile_template')
-            template.before('<div class="twipsies well profile">' + template.html() + '</div>')
-        })
-    </script>
-    
 }

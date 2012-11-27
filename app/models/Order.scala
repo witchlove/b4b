@@ -14,8 +14,8 @@ case class Order(
 
 case class OrderItem(
   id: Pk[Long],
-  productId: Long,
-  quantity: Long)
+  productId: Option[Long],
+  quantity: Option[Long])
 
 object Order {
 
@@ -31,35 +31,69 @@ object Order {
     case order ~ orderItem => (order, orderItem)
   }
 
+  private def nextId(): Long = {
+    DB.withConnection { implicit con =>
+      SQL(
+        """
+          select ORDER_ID_SEQ.nextval
+        """).as(scalar[Long].single)
+    }
+  }
+
   def insert(order: Order) = {
+    
+    val orderId = Order.nextId
+    
     DB.withConnection { implicit con =>
       SQL(
         """
           insert into orders 
-    	  (orderCode,salesPersonId) 
+    	  (id,orderCode,salesPersonId) 
     	  values
           (
-    		 {orderCode},{salesPersonId}
+    		 {id},{orderCode},{salesPersonId}
           )
          """).on(
+          'id -> orderId,
           'orderCode -> order.orderCode,
           'salesPersonId -> order.salesPersonId).executeUpdate()
     }
-    order.orderItems.get map (input => {
+
+    val orderItemsToSave = order.orderItems.get.filter(input => input.productId.isDefined)
+
+    orderItemsToSave map (input => {
       if (!input.equals(None)) {
-        OrderItem.insert(1, input)
+        OrderItem.insert(orderId, input)
       }
     })
 
   }
 
-//  def findById(id: Long): (Order, List[OrderItem]) = {
-//    DB.withConnection { implicit connection =>
-//      {
-//        val result = SQL("select * from orders left join orderitems on orders.id = orderid  where orders.id = {id}").on('id -> id).as(withOrderItems *)
-//      }
-//    }
-//  }
+  def update(id: Long, order: Order) = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          update orders
+          set orderCode = {orderCode},
+          salesPersonId = {salesPersonId}
+          where id = {id}
+        """).on(
+          'id -> id,
+          'orderCode -> order.orderCode,
+          'salesPersonId -> order.salesPersonId).executeUpdate()
+    }
+  }
+
+  def findById(id: Long): Order = {
+    DB.withConnection { implicit connection =>
+      {
+        val orderData: Order = SQL("select * from orders where orders.id = {id}").on('id -> id).as(orderParser.single)
+        val orderItemData: Seq[OrderItem] = SQL("select * from orderitems where orderId ={id}").on('id -> id).as(OrderItem.orderItemParser *)
+
+        Order(orderData.id, orderData.orderCode, orderData.salesPersonId, Option(orderItemData))
+      }
+    }
+  }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = ""): Page[Order] = {
 
@@ -96,8 +130,8 @@ object OrderItem {
 
   val orderItemParser = {
     get[Pk[Long]]("id") ~
-      get[Long]("productId") ~
-      get[Long]("quantity") map {
+      get[Option[Long]]("productId") ~
+      get[Option[Long]]("quantity") map {
         case id ~ productId ~ quantity => OrderItem(id, productId, quantity)
       }
   }
