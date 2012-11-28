@@ -39,7 +39,9 @@ object OrderController extends Controller {
           "id" -> ignored(NotAssigned: Pk[Long]),
           "productId" -> optional(of[Long]),
           "quantity" -> optional(of[Long]))(OrderItem.apply)(OrderItem.unapply))
-        ))(Order.apply)(Order.unapply))
+        ))(Order.apply)(Order.unapply)
+        verifying("orderCode to short", f => f.orderCode.length() > 5)
+  )
 
   def create = Action {
     Ok(html.orders.createForm(orderForm))

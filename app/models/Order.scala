@@ -49,7 +49,7 @@ object Order {
 
     val orderId = Order.nextId
 
-    DB.withConnection { implicit con =>
+    DB.withTransaction  { implicit con =>
       SQL(
         """
           insert into orders 
@@ -82,12 +82,28 @@ object Order {
         """
           update orders
           set orderCode = {orderCode},
-          salesPersonId = {salesPersonId}
+          salesPersonId = {salesPersonId},
+          orderDate = {orderDate},
+          orderRemarks = {orderRemarks}
           where id = {id}
         """).on(
           'id -> id,
           'orderCode -> order.orderCode,
-          'salesPersonId -> order.salesPersonId).executeUpdate()
+          'salesPersonId -> order.salesPersonId,
+          'orderDate -> order.orderDate,
+          'orderRemarks -> order.orderRemarks).executeUpdate()
+    }
+    
+    OrderItem.deleteOrderItemsForOrder(id)
+    
+    if (!(order.orderItems equals (None))) {
+      val orderItemsToSave = order.orderItems.get.filter(input => input.productId.isDefined)
+
+      orderItemsToSave map (input => {
+        if (!input.equals(None)) {
+          OrderItem.insert(id, input)
+        }
+      })
     }
   }
 
@@ -142,7 +158,18 @@ object OrderItem {
         case id ~ productId ~ quantity => OrderItem(id, productId, quantity)
       }
   }
-
+  
+  def deleteOrderItemsForOrder(orderId : Long)  = {
+    DB.withConnection { implicit con =>
+      SQL(
+        """
+          delete from orderItems
+    	  where orderItems.orderId = {orderId}
+         """).on(
+          'orderId -> orderId).executeUpdate()
+    }
+  }
+  
   def insert(orderId: Long, orderItem: OrderItem) = {
     DB.withConnection { implicit con =>
       SQL(

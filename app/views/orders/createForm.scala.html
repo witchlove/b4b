@@ -28,24 +28,22 @@
 		</tr>
 }
 
+@errorGroup(error : String) = {
+				<div class="alert-message">
+                <a class="close" data-dismiss="alert">×</a>
+                    @error
+                </div>
+}
+
 @main {
     
     <h1>Create or Edit Product</h1>
     
     @form(routes.OrderController.save()) {
         
-    	@if(orderForm.hasGlobalErrors) { 
-            <div class="alert alert-error">
-                @orderForm.errorsAsJson
-            </div>
+    	@if(orderForm.hasErrors) {
+    			 @errorGroup(orderForm.errors.head.message)
         }
-    	
-    	@if(orderForm.hasErrors) { 
-            <div class="alert alert-error">
-                @orderForm.errorsAsJson
-            </div>
-        }
-    	
         <fieldset>
         	@inputText(orderForm("orderCode"), '_label -> "Order Code")
             @select(
