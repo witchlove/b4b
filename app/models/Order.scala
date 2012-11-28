@@ -5,11 +5,14 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 import play.api.Logger
+import java.util.Date
 
 case class Order(
   id: Pk[Long],
   orderCode: String,
   salesPersonId: Long,
+  orderDate: Date,
+  orderRemarks: Option[String],
   orderItems: Option[Seq[OrderItem]])
 
 case class OrderItem(
@@ -22,8 +25,10 @@ object Order {
   val orderParser = {
     get[Pk[Long]]("id") ~
       get[String]("orderCode") ~
+      get[Date]("orderDate") ~
+      get[Option[String]]("orderRemarks") ~
       get[Long]("salespersonId") map {
-        case id ~ orderCode ~ salespersonId => Order(id, orderCode, salespersonId, None)
+        case id ~ orderCode ~ orderDate ~ orderRemarks ~ salespersonId => Order(id, orderCode, salespersonId, orderDate, orderRemarks, None)
       }
   }
 
@@ -41,32 +46,34 @@ object Order {
   }
 
   def insert(order: Order) = {
-    
+
     val orderId = Order.nextId
-    
+
     DB.withConnection { implicit con =>
       SQL(
         """
           insert into orders 
-    	  (id,orderCode,salesPersonId) 
+    	  (id,orderCode,orderDate,orderRemarks,salesPersonId) 
     	  values
           (
-    		 {id},{orderCode},{salesPersonId}
+    		 {id},{orderCode},{orderDate},{orderRemarks},{salesPersonId}
           )
          """).on(
           'id -> orderId,
           'orderCode -> order.orderCode,
+          'orderDate -> order.orderDate,
+          'orderRemarks -> order.orderRemarks,
           'salesPersonId -> order.salesPersonId).executeUpdate()
     }
+    if (!(order.orderItems equals (None))) {
+      val orderItemsToSave = order.orderItems.get.filter(input => input.productId.isDefined)
 
-    val orderItemsToSave = order.orderItems.get.filter(input => input.productId.isDefined)
-
-    orderItemsToSave map (input => {
-      if (!input.equals(None)) {
-        OrderItem.insert(orderId, input)
-      }
-    })
-
+      orderItemsToSave map (input => {
+        if (!input.equals(None)) {
+          OrderItem.insert(orderId, input)
+        }
+      })
+    }
   }
 
   def update(id: Long, order: Order) = {
@@ -90,7 +97,7 @@ object Order {
         val orderData: Order = SQL("select * from orders where orders.id = {id}").on('id -> id).as(orderParser.single)
         val orderItemData: Seq[OrderItem] = SQL("select * from orderitems where orderId ={id}").on('id -> id).as(OrderItem.orderItemParser *)
 
-        Order(orderData.id, orderData.orderCode, orderData.salesPersonId, Option(orderItemData))
+        Order(orderData.id, orderData.orderCode, orderData.salesPersonId, orderData.orderDate, orderData.orderRemarks, Option(orderItemData))
       }
     }
   }

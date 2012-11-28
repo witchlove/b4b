@@ -55,6 +55,8 @@
                 '_label -> "Sales Persons",
                 '_error -> orderForm("salespersonId").error.map(_.withMessage("Please select a person"))
             )
+    		@inputText(orderForm("orderDate"), '_label -> "Order Date")
+    		@textarea(orderForm("orderRemarks"), args = 'rows -> 3, 'cols -> 50,'_label -> "Remarks")
         </fieldset>
         
     	<fieldset>

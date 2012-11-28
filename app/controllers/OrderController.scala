@@ -1,25 +1,27 @@
 package controllers
 
+import java.util.Date
+
+import scala.Option.option2Iterable
+
 import anorm.NotAssigned
 import anorm.Pk
 import models.Order
+import models.OrderItem
+import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms.ignored
 import play.api.data.Forms.mapping
 import play.api.data.Forms.nonEmptyText
 import play.api.data.Forms.of
+import play.api.data.Forms.optional
+import play.api.data.Forms.seq
+import play.api.data.Forms.text
+import play.api.data.format.Formats.dateFormat
 import play.api.data.format.Formats.longFormat
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
-import play.api.data._
-import play.api._
-import play.api.mvc._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
-import models.OrderItem
-import org.omg.CosNaming.NamingContextPackage.NotFound
 
 object OrderController extends Controller {
 
@@ -30,6 +32,8 @@ object OrderController extends Controller {
       "id" -> ignored(NotAssigned: Pk[Long]),
       "orderCode" -> nonEmptyText,
       "salesPersonId" -> of[Long],
+      "orderDate" -> of[Date],
+      "orderRemarks" -> optional(text),
       "orderitems" -> optional(seq(
         mapping(
           "id" -> ignored(NotAssigned: Pk[Long]),

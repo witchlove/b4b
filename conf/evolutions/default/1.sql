@@ -25,7 +25,9 @@ CREATE TABLE products (
 CREATE TABLE orders (
 	id integer NOT NULL DEFAULT nextval('order_id_seq'),
 	orderCode varchar(150),
-	salesPersonId integer
+	salesPersonId integer,
+	orderDate date,
+	orderRemarks varchar(255)
 );
 
 CREATE TABLE orderItems (
