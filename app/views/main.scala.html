@@ -9,6 +9,7 @@
 		<script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
     </head>
     <body> 
+		<div class="row">
         <header class="topbar">
             <h1 class="fill">
                 <a href="@routes.Application.index()">Business 4 Babies </a>
@@ -17,10 +18,13 @@
  				<a href="@routes.SalesPersonController.list()">Agents</a>
             </h1>
         </header>
-        
-        <section id="main">
-            @content
-        </section>
-        
+        </div>
+		<div class="row fill">
+			<div class="span10 offset2">
+        	<section id="main">
+            	@content
+        	</section>
+			</div>
+        </div>
     </body>
 </html>

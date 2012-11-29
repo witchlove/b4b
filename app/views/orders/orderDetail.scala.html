@@ -1,0 +1,30 @@
+@(order : Order)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main {
+  
+<h1>ORDER DETAIL</h1>
+  <div>
+	<table>
+	<th span="2">Orderdetail</th>
+	<tr><td>OrderCode : </td><td>@order.orderCode</td></tr>
+	<tr><td>Order Date : </td><td>@order.orderDate</td></tr>
+	<tr><td>Sales Person: </td><td>@order.salesPersonId</td></tr>
+	<tr><td>Remarks: </td><td>@order.orderRemarks</td></tr>
+	<tf>
+		<tr><td span="2"><a href="@routes.OrderController.list()" class="btn">Close</a></td></tr>
+	</tf>
+	</table>  
+  </div>
+  <div>
+	<table>
+	<th span="3">Items</th>
+	<tr><td>Product</td><td>Quantity</td></tr>
+	@for(orderItem <- order.orderItems.get) {
+		<tr><td>@orderItem.productId</td><td>@orderItem.quantity</td></tr>
+	} 
+	</table>  
+  </div>
+}

@@ -52,7 +52,11 @@ object OrderController extends Controller {
       Order.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
       orderBy, filter))
   }
-
+  
+  def orderDetail(id: Long) = Action{
+    Ok(html.orders.orderDetail(Order.findById(id)))
+  }
+  
   def edit(id: Long) = Action {
       Ok(html.orders.editForm(id,orderForm.fill(Order.findById(id))))
   }
