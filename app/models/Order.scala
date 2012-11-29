@@ -189,3 +189,8 @@ object OrderItem {
   }
 
 }
+
+object OrderStatus extends Enumeration {
+  type OrderStatus = Value
+  val New,Validated,Deliverd = Value
+}

@@ -41,6 +41,9 @@
             <thead>
                 <tr>
                     @header(2, "Order Code")
+    				@header(3, "Order Date")
+    				@header(4, "Order Remarks")
+    				@header(5, "")
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +53,15 @@
                         <tr>
                     		<td>
                     			<a href="@routes.OrderController.edit(order.id.get)">@order.orderCode</a>
+                    		</td>
+                    		<td>
+                    			@order.orderDate
+                    		</td>
+                    		<td>
+                    			@order.orderRemarks
+                    		</td>
+                    		<td>
+                    			<a href="@routes.OrderController.orderDetail(order.id.get)">readonly</a>
                     		</td>
                         </tr>
                     }
