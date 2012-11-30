@@ -27,6 +27,7 @@ CREATE TABLE orders (
 	orderCode varchar(150),
 	salesPersonId integer,
 	orderDate date,
+	orderStatus varchar(25),
 	orderRemarks varchar(255)
 );
 

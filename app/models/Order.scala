@@ -12,6 +12,7 @@ case class Order(
   orderCode: String,
   salesPersonId: Long,
   orderDate: Date,
+  orderStatus : String,
   orderRemarks: Option[String],
   orderItems: Option[Seq[OrderItem]])
 
@@ -26,14 +27,19 @@ object Order {
     get[Pk[Long]]("id") ~
       get[String]("orderCode") ~
       get[Date]("orderDate") ~
+      get[String]("orderStatus") ~
       get[Option[String]]("orderRemarks") ~
       get[Long]("salespersonId") map {
-        case id ~ orderCode ~ orderDate ~ orderRemarks ~ salespersonId => Order(id, orderCode, salespersonId, orderDate, orderRemarks, None)
+        case id ~ orderCode ~ orderDate ~orderStatus ~ orderRemarks ~ salespersonId => Order(id, orderCode, salespersonId, orderDate,orderStatus, orderRemarks, None)
       }
   }
 
   val withOrderItems = Order.orderParser ~ (OrderItem.orderItemParser ?) map {
     case order ~ orderItem => (order, orderItem)
+  }
+  
+  val withOrderItemsAndProducts = Order.orderParser ~ (OrderItem.orderItemParser ?) ~ (Product.productParser ?) map {
+    case order ~ orderItem ~ product => (order,orderItem, product)
   }
 
   private def nextId(): Long = {
@@ -53,15 +59,16 @@ object Order {
       SQL(
         """
           insert into orders 
-    	  (id,orderCode,orderDate,orderRemarks,salesPersonId) 
+    	  (id,orderCode,orderDate,orderStatus,orderRemarks,salesPersonId) 
     	  values
           (
-    		 {id},{orderCode},{orderDate},{orderRemarks},{salesPersonId}
+    		 {id},{orderCode},{orderDate},{orderStatus},{orderRemarks},{salesPersonId}
           )
          """).on(
           'id -> orderId,
           'orderCode -> order.orderCode,
           'orderDate -> order.orderDate,
+          'orderStatus -> order.orderStatus,
           'orderRemarks -> order.orderRemarks,
           'salesPersonId -> order.salesPersonId).executeUpdate()
     }
@@ -84,6 +91,7 @@ object Order {
           set orderCode = {orderCode},
           salesPersonId = {salesPersonId},
           orderDate = {orderDate},
+          orderStatus = {orderStatus},
           orderRemarks = {orderRemarks}
           where id = {id}
         """).on(
@@ -91,6 +99,7 @@ object Order {
           'orderCode -> order.orderCode,
           'salesPersonId -> order.salesPersonId,
           'orderDate -> order.orderDate,
+          'orderStatus -> order.orderStatus,
           'orderRemarks -> order.orderRemarks).executeUpdate()
     }
     
@@ -112,11 +121,33 @@ object Order {
       {
         val orderData: Order = SQL("select * from orders where orders.id = {id}").on('id -> id).as(orderParser.single)
         val orderItemData: Seq[OrderItem] = SQL("select * from orderitems where orderId ={id}").on('id -> id).as(OrderItem.orderItemParser *)
-
-        Order(orderData.id, orderData.orderCode, orderData.salesPersonId, orderData.orderDate, orderData.orderRemarks, Option(orderItemData))
+        
+        
+        
+        Order(orderData.id, orderData.orderCode, orderData.salesPersonId, orderData.orderDate,orderData.orderStatus,orderData.orderRemarks, Option(orderItemData))
       }
     }
   }
+  
+  
+  
+  def findFullDetails(id : Long) : Any = {
+    DB.withConnection { implicit connection =>
+      {
+        val orderData = SQL("""select *  
+        								from orders , 
+        								orderitems , 
+        								products inner join orderitems t1 on orders.id = t1.orderid 
+        								inner join orderitems t2 on t2.PRODUCTID  = products.id 
+        								where orders.id = {id}""").on('id -> id).as(Order.withOrderItemsAndProducts *)
+       
+        								
+        Logger.debug(orderData.groupBy(_._1).groupBy(_._2).toString)
+      }
+    }
+    
+  }
+   
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = ""): Page[Order] = {
 
@@ -193,4 +224,13 @@ object OrderItem {
 object OrderStatus extends Enumeration {
   type OrderStatus = Value
   val New,Validated,Deliverd = Value
+  
+  def orderStates() : Seq[(String,String)] = {
+		 Seq [(String,String)](("new","New"))
+  }
+  
+  def orderStatesUpdate() : Seq[(String,String)] = {
+		 Seq [(String,String)](("new","New"),("saved","Saved"),("ordered","Ordered"),("Delivered","Delivered"))
+  }
+  
 }

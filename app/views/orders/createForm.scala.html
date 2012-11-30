@@ -5,6 +5,7 @@
 @import helper._
 @import helper.twitterBootstrap._
 
+
 @informationGroup(field: Field, className: String = "orderItem") = {
    
 		<tr>
@@ -54,6 +55,12 @@
                 '_error -> orderForm("salespersonId").error.map(_.withMessage("Please select a person"))
             )
     		@inputText(orderForm("orderDate"), '_label -> "Order Date")
+    		@select(
+                orderForm("orderStatus"), 
+                options = OrderStatus.orderStates(),
+                '_label -> "Order Status",
+                '_error -> orderForm("orderStatus").error.map(_.withMessage("Please select a status"))
+            )
     		@textarea(orderForm("orderRemarks"), args = 'rows -> 3, 'cols -> 50,'_label -> "Remarks")
         </fieldset>
         

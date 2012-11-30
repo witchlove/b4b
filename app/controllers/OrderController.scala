@@ -33,6 +33,7 @@ object OrderController extends Controller {
       "orderCode" -> nonEmptyText,
       "salesPersonId" -> of[Long],
       "orderDate" -> of[Date],
+      "orderStatus" -> nonEmptyText,
       "orderRemarks" -> optional(text),
       "orderitems" -> optional(seq(
         mapping(
