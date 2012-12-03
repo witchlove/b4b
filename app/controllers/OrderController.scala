@@ -23,7 +23,7 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
 
-object OrderController extends Controller {
+object OrderController extends Controller with Secured {
 
   val Home = Redirect(routes.OrderController.list(0, 2, ""))
   

@@ -4,6 +4,11 @@
 # Home page
 GET     /                           controllers.Application.index
 
+# Authentication
+GET     /login                              controllers.Application.login
+POST    /login                              controllers.Application.authenticate
+GET     /logout                             controllers.Application.logout
+
 # Order
 GET		/orders					controllers.OrderController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 GET		/orders/new				controllers.OrderController.create
