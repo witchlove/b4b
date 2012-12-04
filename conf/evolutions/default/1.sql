@@ -47,16 +47,16 @@ create table "user" (
  
 # --- !Downs
 
-DROP TABLE salespersons;
+DROP TABLE "salespersons";
 DROP SEQUENCE salesperson_id_seq;
 
-DROP TABLE products;
+DROP TABLE "products";
 DROP SEQUENCE product_id_seq;
 
-DROP TABLE orders;
+DROP TABLE "orders";
 DROP SEQUENCE order_id_seq;
 
-DROP TABLE orderItems;
+DROP TABLE "orderItems";
 DROP SEQUENCE orderItem_id_seq;
 
-DROP TABLE user;
+DROP TABLE "user";
