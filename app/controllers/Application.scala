@@ -9,7 +9,7 @@ import models._
 import views._
 
 
-object Application extends Controller  with Secured{
+object Application extends Controller  with Secured {
   
   def index = withAuth { username => implicit request =>
     Ok(html.index())
@@ -39,7 +39,7 @@ object Application extends Controller  with Secured{
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.login(formWithErrors)),
-      user => Redirect(routes.Application.index).withSession("email" -> user._1)
+      user => Redirect(routes.OrderController.list()).withSession("username" -> user._1)
     )
   }
 

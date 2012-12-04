@@ -44,14 +44,20 @@ object OrderController extends Controller with Secured {
         verifying("orderCode to short", f => f.orderCode.length() > 5)
   )
 
-  def create = Action {
+  def create = withUser { user  => implicit request =>
     Ok(html.orders.createForm(orderForm))
   }
 
-  def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+  def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request => {
+    
+    if(user.admin){
     Ok(html.orders.ordersOverview(
       Order.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
       orderBy, filter))
+    } else {
+      Forbidden
+    }
+  }
   }
   
   def orderDetail(id: Long) = Action{

@@ -19,7 +19,7 @@ CREATE TABLE products (
 	productCode varchar(150),
 	productName varchar(30),
 	productDescription varchar(255),
-	productPrice bigint(20)
+	productPrice int(20)
 );
 
 CREATE TABLE orders (
@@ -41,7 +41,8 @@ CREATE TABLE orderItems (
 create table user (
   email                     varchar(255) not null primary key,
   name                      varchar(255) not null,
-  password                  varchar(255) not null
+  password                  varchar(255) not null,
+  admin						boolean
 );
  
 # --- !Downs
@@ -57,3 +58,5 @@ DROP SEQUENCE order_id_seq;
 
 DROP TABLE orderItems;
 DROP SEQUENCE orderItem_id_seq;
+
+DROP TABLE user;
