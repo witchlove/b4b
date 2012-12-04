@@ -11,15 +11,7 @@ import views._
 
 object Application extends Controller  with Secured{
   
-//  def index = IsAuthenticated { username => _ =>
-//    User.findByEmail(username).map { user =>
-//      Ok(
-//        html.index()
-//      )
-//    }.getOrElse(Forbidden)
-//  }
-  
-  def index = Action {
+  def index = withAuth { username => implicit request =>
     Ok(html.index())
   }
   
@@ -61,50 +53,25 @@ object Application extends Controller  with Secured{
   }
 }
 
-/**
- * Provide security features
- */
 trait Secured {
-  
-  /**
-   * Retrieve the connected user email.
-   */
-  private def username(request: RequestHeader) = request.session.get("email")
 
-  /**
-   * Redirect to login if the user in not authorized.
-   */
-  private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Application.login)
-  
-  // --
-  
-  /** 
-   * Action for authenticated users.
-   */
-  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = Security.Authenticated(username, onUnauthorized) { user =>
-    Action(request => f(user)(request))
+  def username(request: RequestHeader) = request.session.get(Security.username)
+
+  def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Application.login)
+
+  def withAuth(f: => String => Request[AnyContent] => Result) = {
+    Security.Authenticated(username, onUnauthorized) { user =>
+      Action(request => f(user)(request))
+    }
   }
 
-//  /**
-//   * Check if the connected user is a member of this project.
-//   */
-//  def IsMemberOf(project: Long)(f: => String => Request[AnyContent] => Result) = IsAuthenticated { user => request =>
-//    if(Project.isMember(project, user)) {
-//      f(user)(request)
-//    } else {
-//      Results.Forbidden
-//    }
-//  }
-
-//  /**
-//   * Check if the connected user is a owner of this task.
-//   */
-//  def IsOwnerOf(task: Long)(f: => String => Request[AnyContent] => Result) = IsAuthenticated { user => request =>
-//    if(Task.isOwner(task, user)) {
-//      f(user)(request)
-//    } else {
-//      Results.Forbidden
-//    }
-//  }
-  
+  /**
+   * This method shows how you could wrap the withAuth method to also fetch your user
+   * You will need to implement UserDAO.findOneByUsername
+   */
+  def withUser(f: User => Request[AnyContent] => Result) = withAuth { username => implicit request =>
+    User.findByEmail(username).map { user =>
+      f(user)(request)
+    }.getOrElse(onUnauthorized(request))
+  }
 }
