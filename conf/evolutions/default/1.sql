@@ -19,7 +19,7 @@ CREATE TABLE products (
 	productCode varchar(150),
 	productName varchar(30),
 	productDescription varchar(255),
-	productPrice numeric
+	productPrice integer
 );
 
 CREATE TABLE orders (
@@ -35,7 +35,7 @@ CREATE TABLE orderItems (
 	id integer NOT NULL DEFAULT nextval('orderItem_id_seq'),
 	orderId integer NOT NULL ,
 	productId integer NOT NULL,
-	quantity numeric
+	quantity integer
 );
 
 CREATE TABLE users (
