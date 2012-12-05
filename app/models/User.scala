@@ -31,7 +31,7 @@ object User {
    */
   def findByEmail(email: String): Option[User] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from user where email = {email}").on(
+      SQL("select * from users where email = {email}").on(
         'email -> email
       ).as(User.simple.singleOpt)
     }
@@ -42,7 +42,7 @@ object User {
    */
   def findAll: Seq[User] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from user").as(User.simple *)
+      SQL("select * from users").as(User.simple *)
     }
   }
   
@@ -53,7 +53,7 @@ object User {
     DB.withConnection { implicit connection =>
       SQL(
         """
-         select * from user where 
+         select * from users where 
          email = {email} and password = {password}
         """
       ).on(
@@ -70,7 +70,7 @@ object User {
     DB.withConnection { implicit connection =>
       SQL(
         """
-          insert into user values (
+          insert into users values (
             {email}, {name}, {password}
           )
         """
