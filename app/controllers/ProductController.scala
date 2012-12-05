@@ -13,7 +13,7 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
 
-object ProductController extends Controller {
+object ProductController extends Controller with Secured {
 
   val Home = Redirect(routes.ProductController.list(0, 2, ""))
 
@@ -25,17 +25,17 @@ object ProductController extends Controller {
       "productDescription" -> nonEmptyText,
       "productPrice" -> of[Long])(Product.apply)(Product.unapply))
 
-  def create = Action {
+  def create = withUser { user  => implicit request =>
     Ok(html.products.createForm(productForm))
   }
 
-  def edit(id: Long) = Action {
+  def edit(id: Long) = withUser { user  => implicit request =>
     Product.findById(id).map { product =>
       Ok(html.products.editForm(id, productForm.fill(product)))
     }.getOrElse(NotFound)
   }
 
-  def update(id: Long) = Action { implicit request =>
+  def update(id: Long) = withUser { user  => implicit request =>
     productForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.products.editForm(id, formWithErrors)),
       product => {
@@ -44,7 +44,7 @@ object ProductController extends Controller {
       })
   }
 
-  def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+  def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request =>
     Ok(html.products.productsOverview(
       Product.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
       orderBy, filter))
@@ -55,7 +55,7 @@ object ProductController extends Controller {
     Home
   }
 
-  def save = Action { implicit request =>
+  def save = withUser { user  => implicit request =>
     productForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.products.createForm(formWithErrors)),
       product => {

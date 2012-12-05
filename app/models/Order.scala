@@ -46,7 +46,7 @@ object Order {
     DB.withConnection { implicit con =>
       SQL(
         """
-          select ORDER_ID_SEQ.nextval
+          select nextval('order_id_seq')
         """).as(scalar[Long].single)
     }
   }

@@ -13,7 +13,7 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
 
-object SalesPersonController extends Controller {
+object SalesPersonController extends Controller with Secured {
   
   val salespersonForm : Form[SalesPerson] = Form(
   mapping(
@@ -28,17 +28,17 @@ object SalesPersonController extends Controller {
   
   val Home = Redirect(routes.SalesPersonController.list(0, 2, ""))
   
-  def create = Action {
+  def create = withUser { user  => implicit request =>
     Ok(html.salespersons.createForm(salespersonForm))
   }
   
-  def edit(id: Long) = Action {
+  def edit(id: Long) = withUser { user  => implicit request =>
     SalesPerson.findById(id).map { salesperson =>
       Ok(html.salespersons.editForm(id, salespersonForm.fill(salesperson)))
     }.getOrElse(NotFound)
   }
   
-  def update(id: Long) = Action { implicit request =>
+  def update(id: Long) = withUser { user  => implicit request =>
     salespersonForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.salespersons.editForm(id, formWithErrors)),
       salesperson => {
@@ -48,7 +48,7 @@ object SalesPersonController extends Controller {
     )
   }
   
-  def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
+  def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request =>
     Ok(html.salespersons.salespersonsOverview(
       SalesPerson.list(page = page, orderBy = orderBy, filter = ("%"+filter+"%")),
       orderBy, filter
@@ -60,7 +60,7 @@ object SalesPersonController extends Controller {
     Home
   }
   
-  def save = Action { implicit request =>
+  def save = withUser { user  => implicit request =>
     salespersonForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.salespersons.createForm(formWithErrors)),
       salesPerson => {
