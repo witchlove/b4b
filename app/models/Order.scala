@@ -72,6 +72,7 @@ object Order {
           'orderRemarks -> order.orderRemarks,
           'salesPersonId -> order.salesPersonId).executeUpdate()
     }
+    
     if (!(order.orderItems equals (None))) {
       val orderItemsToSave = order.orderItems.get.filter(input => input.productId.isDefined)
 
