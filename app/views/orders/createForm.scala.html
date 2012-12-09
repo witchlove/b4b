@@ -1,4 +1,4 @@
-@(orderForm: Form[Order])
+@(orderForm: Form[Order],user : User)
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
@@ -31,12 +31,12 @@
 
 @errorGroup(error : String) = {
 				<div class="alert-message">
-                <a class="close" data-dismiss="alert">×</a>
+                <a class="close" data-dismiss="alert">ï¿½</a>
                     @error
                 </div>
 }
 
-@main {
+@main(user) {
     
     <h1>Create or Edit Product</h1>
     

@@ -1,10 +1,10 @@
-@(productForm: Form[Product])
+@(productForm: Form[Product], user : User)
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
 @import helper._
 
-@main {
+@main(user) {
     
     <h1>Create or Edit Product</h1>
     

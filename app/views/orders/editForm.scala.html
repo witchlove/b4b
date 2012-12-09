@@ -1,4 +1,4 @@
-@(id : Long ,orderForm: Form[Order])
+@(id : Long ,orderForm: Form[Order], user : User)
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
@@ -28,7 +28,7 @@
 		</tr>
 }
 
-@main {
+@main(user) {
     
     <h1>Create or Edit Product</h1>
     

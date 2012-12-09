@@ -26,18 +26,18 @@ object ProductController extends Controller with Secured {
       "productPrice" -> of[Long])(Product.apply)(Product.unapply))
 
   def create = withUser { user  => implicit request =>
-    Ok(html.products.createForm(productForm))
+    Ok(html.products.createForm(productForm,user))
   }
 
   def edit(id: Long) = withUser { user  => implicit request =>
     Product.findById(id).map { product =>
-      Ok(html.products.editForm(id, productForm.fill(product)))
+      Ok(html.products.editForm(id, productForm.fill(product),user))
     }.getOrElse(NotFound)
   }
 
   def update(id: Long) = withUser { user  => implicit request =>
     productForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.products.editForm(id, formWithErrors)),
+      formWithErrors => BadRequest(html.products.editForm(id, formWithErrors,user)),
       product => {
         Product.update(id, product)
         Home.flashing("success" -> "Person %s has been updated".format(product.productName))
@@ -47,7 +47,7 @@ object ProductController extends Controller with Secured {
   def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request =>
     Ok(html.products.productsOverview(
       Product.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
-      orderBy, filter))
+      orderBy, filter,user))
   }
 
   def delete(id: Long) = Action {
@@ -57,7 +57,7 @@ object ProductController extends Controller with Secured {
 
   def save = withUser { user  => implicit request =>
     productForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.products.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.products.createForm(formWithErrors,user)),
       product => {
         Product.insert(product)
         Home

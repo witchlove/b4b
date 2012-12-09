@@ -1,10 +1,10 @@
-@(id : Long ,salespersonForm: Form[SalesPerson])
+@(id : Long ,salespersonForm: Form[SalesPerson], user : User)
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
 @import helper._
 
-@main {
+@main(user) {
     
     <h1>Create or Edit SalesPerson</h1>
     

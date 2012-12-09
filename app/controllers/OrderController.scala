@@ -45,32 +45,27 @@ object OrderController extends Controller with Secured {
   )
 
   def create = withUser { user  => implicit request =>
-    Ok(html.orders.createForm(orderForm))
+    Ok(html.orders.createForm(orderForm,user))
   }
 
   def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request => {
-    
-    if(user.admin){
+
     Ok(html.orders.ordersOverview(
-      Order.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),
-      orderBy, filter))
-    } else {
-      Forbidden
-    }
-  }
+      Order.list(page = page, orderBy = orderBy, filter = ("%" + filter + "%")),orderBy, filter,user))
+  	}
   }
   
-  def orderDetail(id: Long) = Action{
-    Ok(html.orders.orderDetail(Order.findById(id)))
+  def orderDetail(id: Long) = withUser { user  => implicit request =>
+    Ok(html.orders.orderDetail(Order.findById(id),user))
   }
   
-  def edit(id: Long) = Action {
-      Ok(html.orders.editForm(id,orderForm.fill(Order.findById(id))))
+  def edit(id: Long) = withUser { user  => implicit request =>
+      Ok(html.orders.editForm(id,orderForm.fill(Order.findById(id)),user))
   }
 
-  def save = Action { implicit request =>
+  def save = withUser { user  => implicit request =>
     orderForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.orders.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.orders.createForm(formWithErrors,user)),
       order => {
         Logger.debug(order.orderItems mkString " + ")
         Order.insert(order)
@@ -79,8 +74,8 @@ object OrderController extends Controller with Secured {
 
   }
 
-  def update(id : Long) = Action { implicit request => orderForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.orders.editForm(id,formWithErrors)),
+  def update(id : Long) = withUser { user  => implicit request => orderForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.orders.editForm(id,formWithErrors,user)),
       order => {
         Order.update(id, order)
         Home.flashing("success" -> "Person %s has been updated".format(order.orderCode))

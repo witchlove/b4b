@@ -1,9 +1,9 @@
-@(order : Order)
+@(order : Order , user : User)
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@main {
+@main(user) {
   
 <h1>ORDER DETAIL</h1>
   <div>

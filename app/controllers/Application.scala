@@ -12,7 +12,8 @@ import views._
 object Application extends Controller  with Secured {
   
   def index = withAuth { username => implicit request =>
-    Ok(html.index())
+    val currentUser : User = User.findByEmail(username).get
+    Ok(html.index(currentUser))
   }
   
   // -- Authentication

@@ -1,4 +1,4 @@
-@(currentPage: Page[Order], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
+@(currentPage: Page[Order], currentOrderBy: Int, currentFilter: String, user : User)(implicit flash: play.api.mvc.Flash)
 
 @****************************************
 * Helper generating navigation links    *
@@ -21,7 +21,7 @@
     </th>
 }
 
-@main {
+@main(user) {
    <h1>@Messages("orders.list.title")</h1>
   
   <div id="actions">
