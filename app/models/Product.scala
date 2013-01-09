@@ -5,6 +5,11 @@ import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
 import java.math.BigDecimal
+import play.api.libs.json.Format
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 
 case class Product(
 	id: Pk[Long],
@@ -25,6 +30,24 @@ object Product {
       case id~productCode~productName~productDescription~productPrice => Product(id, productCode,productName, productDescription, productPrice)
     }
   }
+  
+  implicit object UserFormat extends Format[Product] {
+  
+  def reads(json: JsValue) = Product(
+    Id((json \ "id").as[String].toLong) ,
+    (json \ "productCode").as[String],
+    (json \ "productName").as[String],
+    (json \ "productDescription").as[String],
+    (json \ "productPrice").as[Long]
+  )
+    
+  def writes(product: Product) = JsObject(Seq(
+    "id" -> JsNumber(product.id.get),
+    "productCode" -> JsString(product.productCode),
+    "productName" -> JsString(product.productName),
+    "productDescription"-> JsString(product.productDescription)
+  ))
+}
   
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = ""): Page[Product] = {
     
@@ -70,6 +93,11 @@ object Product {
     DB.withConnection { implicit connection =>
       SQL("select * from products where productCode = {code}").on('code -> code).as(productParser.singleOpt)
     }
+  }
+  
+  def findProductlist() : Set[String] = {
+    val ret : Set[String] = Set.apply("test1","test2","test3")
+    ret
   }
   
   def verifyProductCode(productCode : String) : Boolean = {

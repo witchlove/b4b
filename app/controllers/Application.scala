@@ -4,10 +4,8 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-
 import models._
 import views._
-
 
 object Application extends Controller  with Secured {
   
@@ -51,6 +49,20 @@ object Application extends Controller  with Secured {
     Redirect(routes.Application.login).withNewSession.flashing(
       "success" -> "You've been logged out"
     )
+  }
+  
+  def javascriptRoutes = Action { implicit request =>
+    import routes.javascript._
+    Ok(
+      Routes.javascriptRouter("jsRoutes")(
+        OrderController.create,
+        OrderController.createdemo,
+        ProductController.delete,
+        ProductController.productlistForId,
+        OrderController.orderitem
+        
+      )
+    ).as("text/javascript") 
   }
 }
 

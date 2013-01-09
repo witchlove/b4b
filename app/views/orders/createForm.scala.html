@@ -7,26 +7,25 @@
 
 
 @informationGroup(field: Field, className: String = "orderItem") = {
-   
-		<tr>
-			<td>
+   		<div class="row">
+		<div class="span3">
         	@select(
                 field("productId"), 
                 options = Product.allForSelect,
                 '_default -> "--- Choose a Product ---",
                 '_label -> "Products"
             	)
-			</td>
-			<td>
+       	</div>
+	  	<div class="span3">
         		@inputText(
             		field("quantity"), 
             		'_label -> "quantity"
         		)
-			</td>
-			<td>
+		</div>	
+		<div class="span3">
 				<a class="removeOrderItem btn danger pull-right">Clear</a>
-			</td>
-		</tr>
+		</div>
+		</div>
 }
 
 @errorGroup(error : String) = {
@@ -67,15 +66,12 @@
     	<fieldset>
             <legend>OrderItems</legend>
             
-            <div id="orderitems" class="span6">
-            	<table class="table-condensed table-striped">
+            <div id="orderitems" class="container span8">
                 @repeat(orderForm("orderitems"), min = 15) { orderitem =>
                 
                    @informationGroup(orderitem)
                 
-                }
-                </table>
-                
+                } 
             </div>
             
         </fieldset>

@@ -1,9 +1,7 @@
 package controllers
 
 import java.util.Date
-
 import scala.Option.option2Iterable
-
 import anorm.NotAssigned
 import anorm.Pk
 import models.Order
@@ -22,6 +20,7 @@ import play.api.data.format.Formats.longFormat
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import views.html
+
 
 object OrderController extends Controller with Secured {
 
@@ -43,11 +42,35 @@ object OrderController extends Controller with Secured {
         ))(Order.apply)(Order.unapply)
         verifying("orderCode to short", f => f.orderCode.length() > 5)
   )
+  
+  val orderItemForm : Form[OrderItem] = Form {  mapping(
+          "id" -> ignored(NotAssigned: Pk[Long]),
+          "productId" -> optional(of[Long]),
+          "quantity" -> optional(of[Long]))(OrderItem.apply)(OrderItem.unapply)
+  }
 
   def create = withUser { user  => implicit request =>
     Ok(html.orders.createForm(orderForm,user))
   }
-
+  
+  def createdemo = withUser { user  => implicit request =>
+     Ok(html.orders.demoCreateOrder(orderForm,orderItemForm,user))
+  }
+  
+  def orderitem = withUser { user  => implicit request =>
+   
+    val items = orderForm.get.orderItems.get
+    items :+ OrderItem(null,Option[Long](1),Option[Long](1))
+    Logger.debug("request =>" + request.toString() + request.body)
+     orderItemForm.bindFromRequest.fold(
+      formWithErrors => BadRequest,
+      orderItem => {
+        Logger.debug(orderItem.toString())
+        OrderItem.insert(1,orderItem)
+        Home
+      })
+  }
+  
   def list(page: Int, orderBy: Int, filter: String) = withUser { user  => implicit request => {
 
     Ok(html.orders.ordersOverview(

@@ -1,0 +1,104 @@
+@(orderForm: Form[Order],orderItemForm : Form[OrderItem],user : User)
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@import helper._
+@import helper.twitterBootstrap._
+
+
+@informationGroup(field: Field, className: String = "orderItem") = {
+   		<div class="row" id="firstOrderItem">
+		<div class="span2">
+			@inputText(
+            		field("productId"), 
+            		'_label -> "product"
+        		)
+       	</div>
+	  	<div class="span2">
+        		@inputText(
+            		field("quantity"), 
+            		'_label -> "quantity"
+        		)
+		</div>	
+		</div>
+}
+
+@errorGroup(error : String) = {
+				<div class="alert-message">
+                <a class="close" data-dismiss="alert">�</a>
+                    @error
+                </div>
+}
+
+@main(user) {
+    
+    <h1>Create or Edit Product</h1>
+     
+	<a id="test1" href="#newFolder" class="new newFolder">New folder</a>
+ 
+    @form(routes.OrderController.save()) {
+        
+    	@if(orderForm.hasErrors) {
+    			 @errorGroup(orderForm.errors.head.message)
+        }
+        <fieldset>
+        	@inputText(orderForm("orderCode"), '_label -> "Order Code")
+            @select(
+                orderForm("salesPersonId"), 
+                options = SalesPerson.allForSelect,
+                '_default -> "--- Choose a SalesPerson ---",
+                '_label -> "Sales Persons",
+                '_error -> orderForm("salespersonId").error.map(_.withMessage("Please select a person"))
+            )
+    		@inputText(orderForm("orderDate"), '_label -> "Order Date")
+    		@select(
+                orderForm("orderStatus"), 
+                options = OrderStatus.orderStates(),
+                '_label -> "Order Status",
+                '_error -> orderForm("orderStatus").error.map(_.withMessage("Please select a status"))
+            )
+    		@textarea(orderForm("orderRemarks"), args = 'rows -> 3, 'cols -> 50,'_label -> "Remarks")
+        </fieldset>
+        
+    	<fieldset>
+            <legend>OrderItems</legend>
+            	<fieldset>
+    			
+        		<select id="productSelector">
+        			<option value="test_value" id="test">test</option>
+        			<option value="test1_value" id="test1">test1</option>
+        			<option value="test2_value" id="test2">test2</option>
+        			<option value="test3_value" id="test3">test3</option>
+        		</select>
+        		
+        		<select id="products">
+        		</select>
+        		
+        		@inputText(
+            		orderItemForm("quantity"), 
+            		'_label -> "quantity"
+        		)	
+    			<input id="addOrderItemButton" type="button" value="Add OrderItem" class="btn primary">
+    		
+    			</fieldset>
+            
+            <div id="orderitems" class="container span8">
+                @repeat(orderForm("orderitems"), min = 1) { orderitem =>
+                
+                   @informationGroup(orderitem)
+                
+                } 
+            </div>
+        </fieldset>
+    	
+    	
+    	
+        <div class="actions">
+            <input type="submit" value="Save Order" class="btn primary"> or 
+            <a href="@routes.OrderController.list()" class="btn">Cancel</a>
+            <input type="button" id="addorderitem" value="Save Order" class="btn primary">
+        </div>  	
+    }
+    
+    
+}

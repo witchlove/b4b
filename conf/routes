@@ -12,11 +12,14 @@ GET     /logout                             controllers.Application.logout
 # Order
 GET		/orders					controllers.OrderController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 GET		/orders/new				controllers.OrderController.create
+GET		/orders/demo			controllers.OrderController.createdemo
+POST	/orders/orderitem		controllers.OrderController.orderitem
 GET     /orders/:id          	controllers.OrderController.edit(id:Long)
 GET     /orders/:id/detail      controllers.OrderController.orderDetail(id:Long)
 POST    /orders/:id           	controllers.OrderController.update(id:Long)
 #POST    /orders/:id/delete    	controllers.OrderController.delete(id:Long)
 POST	/orders					controllers.OrderController.save
+
 
 #SalesPerson
 GET		/salespersons				controllers.SalesPersonController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
@@ -30,9 +33,13 @@ POST	/salespersons				controllers.SalesPersonController.save
 GET		/products				controllers.ProductController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 GET		/products/new			controllers.ProductController.create
 GET     /products/:id           controllers.ProductController.edit(id:Long)
+GET		/products/:id/list		controllers.ProductController.productlistForId(id:String)
 POST    /products/:id           controllers.ProductController.update(id:Long)
 POST    /products/:id/delete    controllers.ProductController.delete(id:Long)
 POST	/products				controllers.ProductController.save
+
+
+GET     /assets/javascripts/routes          controllers.Application.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
